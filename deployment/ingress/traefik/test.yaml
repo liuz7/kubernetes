@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-router
+  namespace: default
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginx-router
+    spec:
+      containers:
+      - name: nginx-router
+        image: nginx
+        ports:
+        - containerPort: 80
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx-router
+  namespace: default
+spec:
+  selector:
+    app: nginx-router
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-router-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: "nginx.k8s"
+    http:
+      paths:
+      - backend:
+          serviceName: nginx-router
+          servicePort: 80
