@@ -1,18 +1,27 @@
----
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: k8s-traefik
+  name: dashboard-kibana-ingress
   namespace: kube-system
   annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.frontend.rule.type: PathPrefixStrip
+      kubernetes.io/ingress.class: traefik
 spec:
   rules:
-  - host: system.k8s
+  - host: dashboard.k8s
     http:
       paths:
-      - path: /dashboard
-        backend:
+      - backend:
           serviceName: kubernetes-dashboard
           servicePort: 443
+  - host: kibana.k8s
+    http:
+      paths:
+      - backend:
+          serviceName: kibana
+          servicePort: 5601
+  - host: es.k8s
+    http:
+      paths:
+      - backend:
+          serviceName: elasticsearch
+          servicePort: 9200
